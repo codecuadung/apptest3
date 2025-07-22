@@ -46,10 +46,11 @@ app.set('view engine', 'ejs');
 // Cấu hình CORS để cho phép kết nối từ tất cả các nguồn
 
 app.use(cors({
-  origin: true, // Cho phép mọi origin, bao gồm cả ứng dụng mobile không có origin
+  origin: ['https://apptest3-production.up.railway.app', 'http://localhost:4000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true,
 }));
+
 
 app.use(logger('dev'));
 app.use(express.json());

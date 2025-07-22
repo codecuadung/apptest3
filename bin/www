@@ -9,6 +9,7 @@ var debug = require('debug')('datn-backend:server');
 var http = require('http');
 var { Server } = require('socket.io'); // Import Socket.IO
 const User = require('../models/User')
+require('dotenv').config(); 
 
 let adminSockets = []
 let userSockets = []
@@ -17,7 +18,8 @@ let userSockets = []
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || 4000);
+var port = process.env.PORT || 4000
+console.log('Server will start on port:', port);
 app.set('port', port);
 
 /**
