@@ -1,6 +1,6 @@
 var express = require('express');
 const middlewareController = require('../controller/middlewareController');
-const CategoryController = require('../controller/categorycontroller');
+const CategoryController = require('../controller/Categorycontroller');
 const { uploadphoto, resizeAndUploadImage } = require('../controller/imageUploadMiddleware');
 var router = express.Router();
 
