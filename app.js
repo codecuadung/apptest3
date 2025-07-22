@@ -91,21 +91,21 @@ app.use('/v1/respone', ResponeRouter);// Tạo HTTP server từ ứng dụng Exp
 app.use('/v1/notification', NotifiactionRouter);
 app.use('/v1/verifi', VerifiEmailRouter);
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
 
-// Khởi tạo một instance của Socket.IO với HTTP server
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    credentials: true,
-  },
-});
+// // Khởi tạo một instance của Socket.IO với HTTP server
+// const io = new Server(server, {
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+//     credentials: true,
+//   },
+// });
 
-const PORT = process.env.PORT || 4000
-server.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+// const PORT = process.env.PORT || 4000
+// server.listen(PORT, () => {
+//   console.log(`Server is listening on port ${PORT}`);
+// });
 
 // Lắng nghe kết nối từ client
 
@@ -114,59 +114,59 @@ const User = require('./models/User'); // Import model User
 let adminSockets = [];
 let userSockets = [];
 
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+// io.on('connection', (socket) => {
+//   console.log('User connected:', socket.id);
 
-  // Lắng nghe sự kiện 'registerUser' từ client để lưu socket ID
-  socket.on('registerUser', async (userId) => {
-    try {
-      // Tìm user trong MongoDB và cập nhật socketId, isConnected
-      await User.findByIdAndUpdate(userId, {
-        socketId: socket.id,
-        isConnected: true,
-      });
+//   // Lắng nghe sự kiện 'registerUser' từ client để lưu socket ID
+//   socket.on('registerUser', async (userId) => {
+//     try {
+//       // Tìm user trong MongoDB và cập nhật socketId, isConnected
+//       await User.findByIdAndUpdate(userId, {
+//         socketId: socket.id,
+//         isConnected: true,
+//       });
 
-      console.log(`User ${userId} registered with socket ID: ${socket.id}`);
-    } catch (error) {
-      console.error('Error updating user socket ID:', error);
-    }
-  });
+//       console.log(`User ${userId} registered with socket ID: ${socket.id}`);
+//     } catch (error) {
+//       console.error('Error updating user socket ID:', error);
+//     }
+//   });
 
-  socket.on('registerAdmin', () => {
-    adminSockets.push(socket);
-    console.log('Admin connected: ' + socket.id);
-  });
+//   socket.on('registerAdmin', () => {
+//     adminSockets.push(socket);
+//     console.log('Admin connected: ' + socket.id);
+//   });
 
-  socket.on('sendMessageToAdmins', (message) => {
-    adminSockets.forEach(adminSocket => {
-        adminSocket.emit('receiveMessageFromUser ', message);
-    });
-});
+//   socket.on('sendMessageToAdmins', (message) => {
+//     adminSockets.forEach(adminSocket => {
+//         adminSocket.emit('receiveMessageFromUser ', message);
+//     });
+// });
 
-  // Khi client ngắt kết nối
-  socket.on('disconnect', async () => {
-    console.log('User disconnected:', socket.id);
+//   // Khi client ngắt kết nối
+//   socket.on('disconnect', async () => {
+//     console.log('User disconnected:', socket.id);
 
-    try {
-      // Tìm user dựa trên socketId và cập nhật trạng thái
-      const user = await User.findOneAndUpdate(
-        { socketId: socket.id },
-        {
-          $set: {
-            isConnected: false,
-            socketId: null,
-          },
-        }
-      );
+//     try {
+//       // Tìm user dựa trên socketId và cập nhật trạng thái
+//       const user = await User.findOneAndUpdate(
+//         { socketId: socket.id },
+//         {
+//           $set: {
+//             isConnected: false,
+//             socketId: null,
+//           },
+//         }
+//       );
 
-      if (user) {
-        console.log(`User ${user._id} disconnected and socket ID removed.`);
-      }
-    } catch (error) {
-      console.error('Error updating user disconnect status:', error);
-    }
-  });
-});
+//       if (user) {
+//         console.log(`User ${user._id} disconnected and socket ID removed.`);
+//       }
+//     } catch (error) {
+//       console.error('Error updating user disconnect status:', error);
+//     }
+//   });
+// });
 
 // API để gửi thông báo tới tất cả các client
 app.post('/send', (req, res) => {
@@ -188,7 +188,7 @@ app.post('/send', (req, res) => {
   });
 });
 
-app.locals.io = io;
+// app.locals.io = io;
 
 
 

@@ -8,12 +8,16 @@ var app = require('../app');
 var debug = require('debug')('datn-backend:server');
 var http = require('http');
 var { Server } = require('socket.io'); // Import Socket.IO
+const User = require('../models/User')
+
+let adminSockets = []
+let userSockets = []
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '4000');
+var port = normalizePort(process.env.PORT || 4000);
 app.set('port', port);
 
 /**
@@ -26,21 +30,59 @@ var server = http.createServer(app);
 var io = new Server(server, {
   cors: {
     origin: '*', // URL frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
 });
 
 // Lắng nghe các sự kiện Socket.IO
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  console.log('User connected:', socket.id);
 
-  socket.on('sendMessage', (data) => {
-    console.log('Message received:', data);
-    io.emit('receiveMessage', data); // Phát sự kiện đến tất cả client
+  // Nhận ID người dùng từ client để lưu lại socket ID
+  socket.on('registerUser', async (userId) => {
+    try {
+      await User.findByIdAndUpdate(userId, {
+        socketId: socket.id,
+        isConnected: true,
+      });
+      console.log(`User ${userId} registered with socket ID: ${socket.id}`);
+    } catch (error) {
+      console.error('Error updating user socket ID:', error);
+    }
   });
 
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
+  socket.on('registerAdmin', () => {
+    adminSockets.push(socket);
+    console.log('Admin connected: ' + socket.id);
+  });
+
+  socket.on('sendMessageToAdmins', (message) => {
+    adminSockets.forEach(adminSocket => {
+      adminSocket.emit('receiveMessageFromUser', message);
+    });
+  });
+
+  socket.on('disconnect', async () => {
+    console.log('User disconnected:', socket.id);
+
+    try {
+      const user = await User.findOneAndUpdate(
+        { socketId: socket.id },
+        {
+          $set: {
+            isConnected: false,
+            socketId: null,
+          },
+        }
+      );
+
+      if (user) {
+        console.log(`User ${user._id} disconnected and socket ID removed.`);
+      }
+    } catch (error) {
+      console.error('Error updating user disconnect status:', error);
+    }
   });
 });
 
