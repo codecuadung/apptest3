@@ -1,6 +1,6 @@
 var express = require('express');
 const middlewareController = require('../controller/middlewareController');
-const FavoriteController = require('../controller/favoritesController');
+const FavoriteController = require('../controller/FavoritesController');
 var router = express.Router();
 
 
