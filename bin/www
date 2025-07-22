@@ -25,7 +25,7 @@ var server = http.createServer(app);
 // Tích hợp Socket.IO với server
 var io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000', // URL frontend
+    origin: '*', // URL frontend
     credentials: true,
   },
 });
